@@ -1,6 +1,7 @@
 package com.example.quiz_app_starter
 
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -31,6 +32,11 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.quiz_app_starter.ui.theme.QuizappstarterTheme
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.withStyle
+import androidx.compose.ui.text.style.TextAlign
+import com.example.quiz_app_starter.presentation.QuestionScreen
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -38,12 +44,7 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             QuizappstarterTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    MainMenuScreen(
-                        bestScore = 3,
-                        modifier = Modifier.padding(innerPadding)
-                    )
-                }
+                QuestionScreen()
             }
         }
     }
@@ -56,13 +57,13 @@ fun MainMenuScreen(
 ) {
 
     Column(
-        modifier = modifier
+        modifier = modifier.fillMaxSize()
             .padding(16.dp),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Image(
-            painter = painterResource(id = R.drawable.ic_launcher_foreground),
+            painter = painterResource(id = R.drawable.quizicon),
             contentDescription = "App Logo",
             modifier = Modifier.size(120.dp)
         )
@@ -79,10 +80,43 @@ fun MainMenuScreen(
         Spacer(modifier = Modifier.height(10.dp))
 
         Text(
-            text = "Test your knowledge!",
+            text = buildAnnotatedString {
+
+                withStyle(
+                    style = SpanStyle(
+                        color = MaterialTheme.colorScheme.primary,
+                        fontWeight = FontWeight.Bold
+                    )
+                ) {
+                    append("Test your\n")
+                }
+
+                val rainbow = listOf(
+                    Color.Red,
+                    Color(0xFFFF7F00), // orange
+                    Color.Yellow,
+                    Color.Green,
+                    Color.Blue,
+                    Color(0xFF4B0082), // indigo
+                    Color(0xFF9400D3)  // violet
+                )
+
+                val word = "KNOWLEDGE!"
+
+                word.forEachIndexed { index, char ->
+                    withStyle(
+                        style = SpanStyle(
+                            color = rainbow[index % rainbow.size],
+                            fontWeight = FontWeight.Bold
+                        )
+                    ) {
+                        append(char)
+                    }
+                }
+            },
             style = MaterialTheme.typography.bodyMedium,
-            fontWeight = FontWeight.Bold,
-            color = MaterialTheme.colorScheme.onBackground
+            textAlign = TextAlign.Center,
+            modifier = Modifier.fillMaxWidth()
         )
 
         Spacer(modifier = Modifier.height(32.dp))
@@ -111,7 +145,9 @@ fun MainMenuScreen(
         Spacer(modifier = Modifier.height(24.dp))
 
         Button(
-            onClick = {},
+            onClick = {
+                Log.d("App","Game started")
+            },
             modifier = Modifier.fillMaxWidth(0.6f),
             shape = MaterialTheme.shapes.medium
         ) {
@@ -124,6 +160,6 @@ fun MainMenuScreen(
 @Composable
 fun MainMenuScreenPreview() {
     QuizappstarterTheme {
-        MainMenuScreen(3, Modifier)
+        MainMenuScreen(14, Modifier)
     }
 }
